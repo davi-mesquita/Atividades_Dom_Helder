@@ -3,7 +3,7 @@ import functools
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from werkzeug.security import check_senha_hash, generate_senha_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
@@ -13,6 +13,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
+        nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
         db = get_db()
@@ -22,12 +23,14 @@ def register():
             error = 'Por favor preencha o campo e-mail.'
         elif not senha:
             error = 'Por favor preencha o campo senha.'
+        elif not nome:
+            error = 'Por favor preencha o campo nome.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO usuario (email, senha) VALUES (?, ?)",
-                    (email, generate_senha_hash(senha)),
+                    "INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)",
+                    (email, generate_password_hash(senha)),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -52,13 +55,13 @@ def login():
 
         if usuario is None:
             error = 'E-mail Incorreto.'
-        elif not check_senha_hash(usuario['senha'], senha):
+        elif not check_password_hash(usuario['senha'], senha):
             error = 'Senha Incorreto.'
 
         if error is None:
             session.clear()
             session['usuario_id'] = usuario['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('base'))
 
         flash(error)
 
@@ -78,7 +81,7 @@ def load_logged_in_usuario():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('base'))
 
 def login_required(view):
     @functools.wraps(view)
