@@ -1,6 +1,8 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, session
+
+from flaskr.db import get_db
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -19,9 +21,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/')
-    def index():
-        return render_template('base.html')
 
     from . import db
     db.init_app(app)
@@ -29,9 +28,15 @@ def create_app(test_config=None):
     from . import auth
     app.register_blueprint(auth.bp)
 
+    from . import cart
+    app.register_blueprint(cart.bp)
 
-    from . import itens
-    app.register_blueprint(itens.bp)
-    app.add_url_rule('/', endpoint='index')
 
+    @app.route('/')
+    def index():
+        items = get_db().execute('SELECT * FROM produto')
+        cart_count = len(session.get('cart', []))
+        session['cart_count'] = cart_count
+        return render_template('base.html', items=items)
+    
     return app

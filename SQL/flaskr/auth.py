@@ -30,7 +30,7 @@ def register():
             try:
                 db.execute(
                     "INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)",
-                    (email, generate_password_hash(senha)),
+                    (nome, email, generate_password_hash(senha)),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -60,8 +60,8 @@ def login():
 
         if error is None:
             session.clear()
-            session['usuario_id'] = usuario['id']
-            return redirect(url_for('base'))
+            session['id_usuario'] = usuario['id_usuario']
+            return redirect(url_for('index'))
 
         flash(error)
 
@@ -69,19 +69,20 @@ def login():
 
 @bp.before_app_request
 def load_logged_in_usuario():
-    usuario_id = session.get('usuario_id')
+    id_usuario = session.get('id_usuario')
 
-    if usuario_id is None:
+    if id_usuario is None:
         g.usuario = None
     else:
+        id_usuario = int(id_usuario) 
         g.usuario = get_db().execute(
-            'SELECT * FROM usuario WHERE id = ?', (usuario_id,)
+            'SELECT * FROM usuario WHERE id_usuario = ?', (id_usuario,)
         ).fetchone()
 
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('base'))
+    return redirect(url_for('index'))
 
 def login_required(view):
     @functools.wraps(view)
