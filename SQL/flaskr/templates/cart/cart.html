@@ -1,31 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Carrinho de Compras - Flaskr</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-  <section class="content">
-    <header>
-      <h1>Carrinho de Compras</h1>
-    </header>
-    {% for message in get_flashed_messages() %}
+  <head>
+    <title>Carrinho de Compras - Flaskr</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <section class="content">
+      <header>
+        <h1>Carrinho de Compras</h1>
+      </header>
+      {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
-    {% endfor %}
-    <div class="cart-items">
-      {% for item in cart_items %}
+      {% endfor %}
+      <div class="cart-items">
+        {% for item in cart_items %}
         <div class="cart-item">
-          <img src="{{ url_for('static', filename=item['imagem'].replace('static/', '')) }}" alt="{{ item['nome'] }}">
+          <img
+            src="{{ url_for('static', filename=item['imagem'].replace('static/', '')) }}"
+            alt="{{ item['nome'] }}"
+          />
           <h2>{{ item['nome'] }}</h2>
           <p>{{ item['descricao'] }}</p>
           <p><strong>Valor:</strong> R$ {{ item['preco'] }}</p>
         </div>
-      {% endfor %}
-    </div>
-    <div class="total-value">
-      <h3>Valor Total: R$ {{ total_value }}</h3>
-    </div>
-    <a href="{{ url_for('index') }}">Voltar às Compras</a>
-  </section>
-</body>
+        {% endfor %}
+      </div>
+      <div class="total-value">
+        <h3>Valor Total: R$ {{ total_value }}</h3>
+      </div>
+      <a class="btn" href="{{ url_for('index') }}">Voltar às Compras</a>
+    </section>
+  </body>
 </html>

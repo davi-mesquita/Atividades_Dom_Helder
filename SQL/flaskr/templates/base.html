@@ -1,48 +1,60 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Loja - Flaskr</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-  <nav>
-    <h1>E-commerce</h1>
-    <ul>
-      {% if g.usuario %}
+  <head>
+    <title>Loja - Flaskr</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <nav>
+      <h1>E-commerce</h1>
+      <ul>
+        {% if g.usuario %}
         <li><span>{{ g.usuario['nome'] }}</span></li>
         <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
-      {% else %}
+        {% else %}
         <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
         <li><a href="{{ url_for('auth.register') }}">Registrar</a></li>
-      {% endif %}
-    </ul>
-    <div class="cart-icon">
-      <a href="{{ url_for('cart.view_cart') }}">
-        <img src="{{ url_for('static', filename='img/cart-icon.png') }}" alt="Carrinho">
-        <span class="cart-count">{{ session.get('cart_count', 0) }}</span>
-      </a>
-    </div>
-  </nav>
-  <section class="content">
-    <header>
-      <h1>Produtos</h1>
-    </header>
-    {% for message in get_flashed_messages() %}
+        {% endif %}
+      </ul>
+      <div class="cart-icon">
+        <a href="{{ url_for('cart.view_cart') }}">
+          <img
+            src="{{ url_for('static', filename='img/cart-icon.png') }}"
+            alt="Carrinho"
+          />
+          <span class="cart-count">{{ session.get('cart_count', 0) }}</span>
+        </a>
+      </div>
+    </nav>
+    <section class="content">
+      <header>
+        <h1>Produtos</h1>
+      </header>
+      {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
-    {% endfor %}
-    <div class="items-panel">
-      {% for item in items %}
+      {% endfor %}
+      <div class="items-panel">
+        {% for item in items %}
         <div class="card">
-          <img src="{{ url_for('static', filename=item['imagem'].replace('static/', '')) }}" alt="{{ item['nome'] }}">
+          <img
+            src="{{ url_for('static', filename=item['imagem'].replace('static/', '')) }}"
+            alt="{{ item['nome'] }}"
+          />
           <h2>{{ item['nome'] }}</h2>
           <p>{{ item['descricao'] }}</p>
           <p><strong>Valor:</strong> R$ {{ item['preco'] }}</p>
-          <form action="{{ url_for('cart.add_to_cart', item_id=item['id_produto']) }}" method="post">
-            <button type="submit">Adicionar ao Carrinho</button>
+          <form
+            action="{{ url_for('cart.add_to_cart', item_id=item['id_produto']) }}"
+            method="post"
+          >
+            <button class="btn" type="submit">Adicionar ao Carrinho</button>
           </form>
         </div>
-      {% endfor %}
-    </div>
-  </section>
-</body>
+        {% endfor %}
+      </div>
+    </section>
+  </body>
 </html>
